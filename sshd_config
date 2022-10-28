@@ -1,0 +1,84 @@
+# SSHD Configuration CIS2 Compliant
+## Nework Configuration
+Port 22
+AddressFamily inet
+ListenAddress 192.168.100.14
+Protocol 2
+
+## Key Configuration
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+
+## Ciphers and keying
+RekeyLimit default none
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
+kexalgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+
+## Logging
+SyslogFacility AUTHPRIV
+LogLevel INFO
+
+# Authentication
+LoginGraceTime 60
+PermitRootLogin no
+StrictModes yes
+MaxAuthTries 4
+MaxSessions 0
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+IgnoreRhosts yes
+HostbasedAuthentication no
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+# Kerberos options
+KerberosOrLocalPasswd yes
+KerberosAuthentication yes
+KerberosTicketCleanup yes
+KerberosUseKuserok yes
+
+# GSSAPI options
+GSSAPICleanupCredentials yes
+GSSAPIAuthentication yes
+GSSAPIStrictAcceptorCheck yes
+GSSAPIKeyExchange yes
+GSSAPIEnablek5users yes
+
+# WARNING: 'UsePAM no' is not supported in Red Hat Enterprise Linux and may cause several problems.
+
+UsePAM no
+ChallengeResponseAuthentication yes
+
+X11Forwarding no
+PermitUserEnvironment no
+ClientAliveInterval 300
+ClientAliveCountMax 0
+Banner /etc/issue.net
+
+# Accept locale-related environment variables
+AcceptEnv LANG LC_CTYPE LC_NUMERIC LC_TIME LC_COLLATE LC_MONETARY LC_MESSAGES
+AcceptEnv LC_PAPER LC_NAME LC_ADDRESS LC_TELEPHONE LC_MEASUREMENT
+AcceptEnv LC_IDENTIFICATION LC_ALL LANGUAGE
+AcceptEnv XMODIFIERS
+
+
+#GSSAPIDelegateCredentials yes
+AuthorizedKeysCommandUser nobody
+AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
+
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/openssh/sftp-server
+
+AllowGroups usr_srvc_ftp jhernandez
+
+Match User usr_srvc_ftp
+        ForceCommand internal-sftp
+        PasswordAuthentication yes
+        MaxSessions 1
+
+Match Group jhernandez
+        X11Forwarding yes
+        ClientAliveInterval 3600
+        ClientAliveCountMax 2
+        MaxSessions 2
