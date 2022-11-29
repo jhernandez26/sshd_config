@@ -1,4 +1,8 @@
 # SSHD Configuration CIS2 Compliant
+
+## Include ssh Configuration
+Include /etc/ssh/sshd_config.d/*.conf
+
 ## Nework Configuration
 Port 22
 AddressFamily inet
@@ -47,7 +51,7 @@ GSSAPIEnablek5users yes
 
 # WARNING: 'UsePAM no' is not supported in Red Hat Enterprise Linux and may cause several problems.
 
-UsePAM no
+UsePAM yes
 ChallengeResponseAuthentication yes
 
 X11Forwarding no
@@ -70,15 +74,4 @@ AuthorizedKeysCommand /usr/bin/sss_ssh_authorizedkeys
 # override default of no subsystems
 Subsystem       sftp    /usr/libexec/openssh/sftp-server
 
-AllowGroups usr_srvc_ftp jhernandez
-
-Match User usr_srvc_ftp
-        ForceCommand internal-sftp
-        PasswordAuthentication yes
-        MaxSessions 1
-
-Match Group jhernandez
-        X11Forwarding yes
-        ClientAliveInterval 3600
-        ClientAliveCountMax 2
-        MaxSessions 2
+AllowGroups usr_srvc_sftp jhernandez
